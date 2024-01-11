@@ -1,0 +1,236 @@
+DROP PROCEDURE InsertarAplicationTrain;
+---funcion train
+CREATE PROCEDURE InsertarAplicationTrain
+@idcurr int,
+@tarjet VARCHAR(200),
+@namacont VARCHAR(200),
+@idcliente INT,
+@idcontrato INT,
+@idinfoprestamo INT 
+AS
+	BEGIN
+ 
+    INSERT INTO dbo.Aplication_Train_Test
+        (
+		SK_ID_CURR,
+		Targets,
+		Name_Cont,
+		id_Cliente,
+		id_contrato,
+		id_info_prestamo
+		)
+         VALUES
+               (
+			   @idcurr ,
+			   @tarjet
+			   ,@namacont
+			   ,@idcliente
+			   ,@idcontrato
+			  , @idinfoprestamo
+			    
+			   )
+END;
+
+EXEC InsertarAplicationTrain 1,'UTN32','UTN32',1,1,1
+ 
+SELECT * FROM Aplication_Train_Test
+
+delete Aplication_Train_Test
+SELECT * FROM dbo.Previus_aplication
+ALTER TABLE dbo.Previus_aplication ADD CONSTRAINT fk_idcurrprev_idcurrtrain FOREIGN KEY (Id_curr) REFERENCES Aplication_Train_Test (SK_ID_CURR);
+---funcion previus
+DROP PROCEDURE InsertarPrevius;
+CREATE PROCEDURE InsertarPrevius
+@idprevius int,
+@idcurr int,
+@AMT_Aplication VARCHAR(MAX),
+@Name_Client_Type VARCHAR(MAX),
+@id_datos_contrato INT,
+@Name_goods_category varchar(MAX),
+@name_product_type varchar(MAX) 
+AS
+	BEGIN
+ 
+    INSERT INTO dbo.Previus_aplication
+        (
+		Id_previus_aplication,
+		Id_curr,
+		AMT_Aplication,
+		Name_Client_Type,
+		id_datos_contrato,	
+		Name_goods_category,
+		name_product_type
+		)
+         VALUES
+               (
+		@idprevius ,
+		@idcurr ,
+		@AMT_Aplication ,
+		@Name_Client_Type ,
+		@id_datos_contrato ,
+		@Name_goods_category ,
+		@name_product_type  
+			    
+			   )
+END;
+
+EXEC InsertarPrevius 1,100001,'UTN32','UTN32',1,'DD','DDD';
+SELECT * FROM dbo.Previus_aplication ;
+--delete dbo.Previus_aplication;
+
+
+----------dbo.Info_datos_prestamo
+
+select  * from dbo.Info_datos_prestamo
+
+SELECT * FROM Aplication_Train_Test
+
+ALTER TABLE Aplication_Train_Test ADD CONSTRAINT FK_ATRAIN_IFOPRESTAMO  FOREIGN KEY (id_info_prestamo) REFERENCES Info_datos_prestamo(ID)
+
+DROP PROCEDURE InsertarInfo_prestamo;
+
+CREATE PROCEDURE InsertarInfo_prestamo
+@Weekday_app_Pro_start VARCHAR(MAX),
+@Hour_app_proces VARCHAR(MAX)
+AS
+	BEGIN
+ 
+    INSERT INTO dbo.Info_datos_prestamo
+        (
+			Weekday_app_process_start,
+			Hour_app_process
+		)
+         VALUES
+               (
+				 @Weekday_app_Pro_start
+				 ,@Hour_app_proces		    
+			   )
+END;
+
+delete Info_datos_prestamo
+
+EXEC InsertarInfo_prestamo '1','2';
+
+-----------------------contrato
+
+CREATE PROCEDURE Insert_contrato
+@Descripcion VARCHAR(MAX)
+
+AS
+	BEGIN
+ 
+    INSERT INTO dbo.Contrato
+        (
+		Descripcion
+		)
+         VALUES
+               (
+				 @Descripcion				     
+			   )
+END;
+select * from Contrato
+EXEC Insert_contrato 'Revolving loans';
+
+
+------------------------ cliente
+
+select * from Cliente
+
+CREATE PROCEDURE Insert_cliente
+@car VARCHAR(MAX),
+@genero VARCHAR(MAX),
+@hijos VARCHAR(MAX),
+@edu VARCHAR(MAX),
+@fstatus VARCHAR(MAX),
+@housing VARCHAR(MAX),
+@Ocupacion VARCHAR(MAX),
+@ingreso int
+
+AS
+	BEGIN
+ 
+    INSERT INTO dbo.Cliente
+        (
+		Flag_Own_car,
+		Cod_Genero,
+		Cant_Hijos,
+		Name_Education_Type,
+		Name_Family_Status,
+		Name_Housing_Type,
+		Occupation_Type,
+		Id_Ingresos
+		)
+         VALUES
+               (
+				 @car
+				 ,@genero
+				 	,@hijos	
+					,@edu	
+					,@fstatus	
+					, @housing  
+					 , @Ocupacion
+					, @ingreso
+			   )
+END;
+
+
+exec Insert_cliente '','','','','','','',1;
+
+
+CREATE PROCEDURE Insert_Ingreso_cliente
+@income_total VARCHAR(MAX),
+@amt_credit VARCHAR(MAX),
+@amtanualiti VARCHAR(MAX),
+@amtgoodprice VARCHAR(MAX),
+@nameincome VARCHAR(MAX)
+
+
+AS
+	BEGIN
+ 
+    INSERT INTO dbo.Ingreso_Cliente
+        (
+		Income_Total_AMT
+		,AMT_Credit
+		,AMT_Annuality
+		,AMT_Goods_Price
+		,Name_Income_Type
+		)
+         VALUES
+               (
+				@income_total
+				,@amt_credit
+				,@amtanualiti
+				,@amtgoodprice
+				,@nameincome
+			   )
+END;
+
+
+exec Insert_Ingreso_cliente '','','','','';
+
+select * from Ingreso_Cliente;
+
+
+ALTER TABLE Cliente ADD CONSTRAINT FK_Cliente_IngreCliente  FOREIGN KEY (Id_Ingresos) REFERENCES Ingreso_Cliente(ID)
+
+
+-----------datoscontrato
+select Id_previus_aplication from Previus_aplication
+select * from Datos_Contrato
+select * from Previus_aplication where id_datos_contrato=1184
+
+
+create procedure Insert_Datos_contrato
+@name_contract varchar(max),
+@name_paymen varchar(max),
+@code_rejec_reason varchar(max),
+@name_portafolio varchar(max)
+as
+	begin
+	insert into Datos_Contrato(Name_Contract_status,Name_paymet_type,Code_reject_reason,Name_portafolio)
+	values(@name_contract,@name_paymen,@code_rejec_reason,@name_portafolio);
+	end;
+
+	exec Insert_Datos_contrato 'Name_Contract_status','Name_paymet_type','Code_reject_reason','Name_portafolio';
+

@@ -1,0 +1,30 @@
+Create SCHEMA client_data;
+Create SCHEMA aplication;
+Create SCHEMA details;
+Create SCHEMA bureau;
+
+--schema client_data
+Alter schema client_data transfer dbo.Cliente;
+Alter schema client_data transfer dbo.Credit_card_balance;
+Alter schema client_data transfer dbo.Ingreso_Cliente;
+Alter schema client_data transfer dbo.Cliente;
+Alter schema client_data transfer dbo.info_datos_prestamo;
+
+
+--schema bureau;
+Alter schema bureau transfer dbo.Bureau;
+Alter schema bureau transfer dbo.Bureau_Balance;
+Alter schema bureau transfer dbo.Detalle_Bureau;
+
+--schema aplication
+Alter schema aplication transfer dbo.Aplication_Train_Test;
+Alter schema aplication transfer dbo.Previus_aplication;
+
+--schema details
+Alter schema details transfer dbo.Datos_Contrato;
+Alter schema details transfer dbo.Datos_Payment;
+Alter schema details transfer dbo.Drawings;
+Alter schema details transfer dbo.Detalle_cash_balance;
+Alter schema details transfer dbo.Detalle_Monto_tarjeta;
+Alter schema details transfer dbo.Installments_payments;
+Alter schema details transfer dbo.Pos_cash_balance;

@@ -1,0 +1,363 @@
+-- Table: public.aerolinea
+
+-- DROP TABLE public.aerolinea;
+
+CREATE TABLE public.aerolinea
+(
+    nombre_aerolinea character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    year_fundacion character varying(5) COLLATE pg_catalog."default" NOT NULL,
+    tipo character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    cantidad_pais integer NOT NULL,
+    CONSTRAINT aerolinea_pkey PRIMARY KEY (nombre_aerolinea)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aerolinea
+    OWNER to postgres;
+
+*****************************************************************************************************************
+
+-- Table: public.aeropuerto
+
+-- DROP TABLE public.aeropuerto;
+
+CREATE TABLE public.aeropuerto
+(
+    nombre_aero character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    ciudad character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    pais character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    id integer NOT NULL,
+    CONSTRAINT aeropuerto_pkey PRIMARY KEY (nombre_aero, ciudad, pais),
+    CONSTRAINT id_unique UNIQUE (id)
+
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.aeropuerto
+    OWNER to postgres;
+
+*****************************************************************************************************************
+
+-- Table: public.avion
+
+-- DROP TABLE public.avion;
+
+CREATE TABLE public.avion
+(
+    id character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    modelo character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    year_constru character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    pertenece_aero character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    cantidad_pas integer NOT NULL,
+    estado character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    hora_uso timestamp without time zone,
+    duracion timestamp without time zone,
+    CONSTRAINT avion_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_aerolina FOREIGN KEY (pertenece_aero)
+        REFERENCES public.aerolinea (nombre_aerolinea) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.avion
+    OWNER to postgres;
+
+*****************************************************************************************************************
+
+-- Table: public.pista
+
+-- DROP TABLE public.pista;
+
+CREATE TABLE public.pista
+(
+    num_pista integer NOT NULL,
+    estado character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT pista_pkey PRIMARY KEY (num_pista)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.pista
+    OWNER to postgres;
+
+*****************************************************************************************************************
+
+-- Table: public.puerta
+
+-- DROP TABLE public.puerta;
+
+CREATE TABLE public.puerta
+(
+    num_puerta integer NOT NULL,
+    estado character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    hora_uso timestamp without time zone,
+    CONSTRAINT puerta_pkey PRIMARY KEY (num_puerta)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.puerta
+    OWNER to postgres;
+
+*****************************************************************************************************************
+
+-- Table: public.tripulacion
+
+-- DROP TABLE public.tripulacion;
+
+CREATE TABLE public.tripulacion
+(
+    id_tripu character varying(30) COLLATE pg_catalog."default" NOT NULL,
+    nombre character varying(200) COLLATE pg_catalog."default" NOT NULL,
+    f_nacimiento character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    trabaja_aerolinea character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    rol_tripulacion character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    estado character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    fecha_salida timestamp without time zone,
+    id_vuelo character varying(30) COLLATE pg_catalog."default",
+    CONSTRAINT tripulacion_pkey PRIMARY KEY (id_tripu)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.tripulacion
+    OWNER to postgres;
+
+*****************************************************************************************************************
+
+-- Table: public.tripulacion_horario
+
+-- DROP TABLE public.tripulacion_horario;
+
+CREATE TABLE public.tripulacion_horario
+(
+    id integer NOT NULL,
+    id_tripulacion character varying(30) COLLATE pg_catalog."default" NOT NULL,
+    rol_tripulacion character varying(30) COLLATE pg_catalog."default" NOT NULL,
+    aerolinea character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    horario timestamp without time zone NOT NULL,
+    id_vuelo character varying(50) COLLATE pg_catalog."default",
+    CONSTRAINT tripulacion_horario_pkey PRIMARY KEY (id),
+    CONSTRAINT fk_tripu FOREIGN KEY (id_tripulacion)
+        REFERENCES public.tripulacion (id_tripu) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.tripulacion_horario
+    OWNER to postgres;
+
+*****************************************************************************************************************
+
+-- Table: public.vuelo
+
+-- DROP TABLE public.vuelo;
+
+CREATE TABLE public.vuelo
+(
+    id_vuelo integer NOT NULL,
+    aerolinea character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    precio character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    a_salida character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    a_llegada character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    c_avion character varying(30) COLLATE pg_catalog."default" NOT NULL,
+    p_abordaje integer NOT NULL,
+    f_llegada timestamp without time zone,
+    p_hora timestamp without time zone,
+    pista integer,
+    f_salida timestamp without time zone NOT NULL
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.vuelo
+    OWNER to postgres;
+
+*****************************************************************************************************************
+
+select * from aerolinea
+select * from aeropuerto
+select * from avion
+select * from pista
+select * from puerta
+select * from tripulacion
+select * from vuelo
+
+*****************************************************************************************************************
+
+--INSERT aerolinea
+INSERT INTO aerolinea(nombre_aerolinea,year_fundacion,tipo,cantidad_pais) VALUES('Taca','2000','Internacional',10);
+INSERT INTO aerolinea(nombre_aerolinea,year_fundacion,tipo,cantidad_pais) VALUES('Avianca','2002','Internacional',2);
+INSERT INTO aerolinea(nombre_aerolinea,year_fundacion,tipo,cantidad_pais) VALUES('Copa','2002','Internacional',22);
+INSERT INTO aerolinea(nombre_aerolinea,year_fundacion,tipo,cantidad_pais) VALUES('Aero Mexico','2002','Internacional',24);
+
+*****************************************************************************************************************
+
+--INSERT puerta
+INSERT INTO puerta(num_puerta,estado) VALUES(12,'Disponible');
+INSERT INTO puerta(num_puerta,estado) VALUES(123,'Disponible');
+INSERT INTO puerta(num_puerta,estado) VALUES(124,'Disponible');
+INSERT INTO puerta(num_puerta,estado) VALUES(125,'No Disponible');
+INSERT INTO puerta(num_puerta,estado) VALUES(126,'No Disponible');
+
+*****************************************************************************************************************
+
+--INSERT PISTA
+INSERT INTO pista(num_pista,estado) VALUES(99,'Disponible');
+INSERT INTO pista(num_pista,estado) VALUES(98,'Disponible');
+INSERT INTO pista(num_pista,estado) VALUES(97,'Disponible');
+INSERT INTO pista(num_pista,estado) VALUES(96,'No Disponible');
+INSERT INTO pista(num_pista,estado) VALUES(95,'No Disponible');
+
+*****************************************************************************************************************
+
+--INSERT aeropuerto
+INSERT INTO aeropuerto(id,nombre_aero,ciudad,pais) VALUES(1,'Aero_Mexico','Monterrey','Mexico');
+INSERT INTO aeropuerto(id,nombre_aero,ciudad,pais) VALUES(2,'Aero_CR','Alajuela','Costa Rica');
+INSERT INTO aeropuerto(id,nombre_aero,ciudad,pais) VALUES(3,'Aero_USA','New York','Estados Unidos');
+INSERT INTO aeropuerto(id,nombre_aero,ciudad,pais) VALUES(4,'Aero_Colombia','Medellin','Colombia');
+INSERT INTO aeropuerto(id,nombre_aero,ciudad,pais) VALUES(5,'Aero_Panama','Ciudad panama','Panama');
+
+*****************************************************************************************************************
+
+--INSERT tripulacion
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('23313','Pedro','4/4/2019','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('4316','Jose','4/3/1992','Avianca','Piloto','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('123','Maria','2/3/1987','Avianca','Piloto','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('31234','Madison','1/3/1998','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('432','Allan','4/10/1991','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('4141','Daniel','29/4/1994','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('431','Ana','2/4/1996','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('43161','Natalia','1/6/1997','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('23','Luis','19/2/1989','Avianca','Piloto','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('43','Angela','25/3/1988','Avianca','Piloto','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('43221','Maria','14/9/1994','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('4','Oscar','14/8/1992','Avianca','Piloto','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('23310','Cristino','23/1/1991','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('233','David','21/7/1992','Avianca','Piloto','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('41','Moises','4/8/2019','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('414113','Julio','4/9/2019','Avianca','Piloto','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('4322','Jonathan','4/10/2019','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('987','Kevin','7/11/2019','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('12452','Bryan','8/12/2019','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('9876','Kimberly','9/1/2019','Taca','Piloto','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('9','Courtney','10/2/2019','Taca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('98765','Kendall','11/3/2019','Taca','Piloto','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('1245','Adriana','12/4/2019','Taca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('233213','Taylor','13/5/2019','Taca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('124','Charlie','14/6/2019','Taca','Piloto','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('12','Shawn','15/7/2019','Taca','Piloto','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('4141132','Justin','16/8/2019','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('41411','Rosa','17/9/2019','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('233131','Julia','18/10/2019','Avianca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('98','Aaron','19/11/2019','Taca','Servicio al cliente','Disponible');
+INSERT INTO tripulacion(id_tripu,nombre,f_nacimiento,trabaja_aerolinea,rol_tripulacion,estado)
+VALUES('1','Ryan','30/10/1994','Taca','Piloto','Disponible');
+
+*****************************************************************************************************************
+
+--INSERT aviones
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('1','Boeing','2004','Avianca',50,'Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('2','Boeing2','2004','Avianca',30,'Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('3','Boeing3','2004','Avianca',45,'Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('4','Boeing4','2004','Avianca',30,'Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('5','Boeing5','2004','Avianca',50,'Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('6','Boeing6','2004','Avianca',45,'Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('7','Boeing7','2004','Avianca',60,'Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('8','Boeing8','2004','Avianca',70,'Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('9','Boeing9','2004','Taca',29,'Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('10','Boeing10','2004','Taca',40,'Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('11','Boeing11','2000','Copa',40,'No Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('12','Boeing12','2004','Copa',430,'Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('13','Boeing13','2000','Aero Mexico',40,'No Disponible');
+INSERT INTO avion(id,modelo,year_constru,pertenece_aero,cantidad_pas,estado)
+VALUES ('14','Boeing14','2004','Aero Mexico',430,'Disponible');
+
+*****************************************************************************************************************
+
+--Insert vuelos
+Insert into vuelo (id_vuelo,aerolinea,precio,a_salida,a_llegada,c_avion,p_abordaje,f_llegada,p_hora,pista,f_salida)
+values (1,'Avianca','200','aero_Mexico','aero_CR','3',12,'2019-04-26 12:00:00','2019-04-26 09:00:00',97,'2019-04-26 10:00:00');
+Insert into vuelo (id_vuelo,aerolinea,precio,a_salida,a_llegada,c_avion,p_abordaje,f_llegada,p_hora,pista,f_salida)
+values (2,'Avianca','300','aero_USA','aero_CR','4',123,'2019-04-27 12:00:00','2019-04-27 09:00:00',98,'2019-04-27 10:00:00');
+Insert into vuelo (id_vuelo,aerolinea,precio,a_salida,a_llegada,c_avion,p_abordaje,f_llegada,p_hora,pista,f_salida)
+values (3,'Avianca','200','aero_CR','aero_Mexico','5',124,'2019-04-27 11:00:00','2019-04-27 08:00:00',99,'2019-04-27 09:00:00');
+Insert into vuelo (id_vuelo,aerolinea,precio,a_salida,a_llegada,c_avion,p_abordaje,f_llegada,p_hora,pista,f_salida)
+values (4,'Avianca','300','aero_CR','aero_USA','6',12,'2019-04-28 11:00:00','2019-04-28 08:00:00',98,'2019-04-28 09:00:00');
+Insert into vuelo (id_vuelo,aerolinea,precio,a_salida,a_llegada,c_avion,p_abordaje,f_llegada,p_hora,pista,f_salida)
+values (6,'Avianca','300','aero_USA','aero_Panama','7',123,'2019-04-27 13:00:00','2019-04-27 10:00:00',97,'2019-04-27 11:00:00');
+Insert into vuelo (id_vuelo,aerolinea,precio,a_salida,a_llegada,c_avion,p_abordaje,f_llegada,p_hora,pista,f_salida)
+values (5,'Avianca','300','aero_Panama','aero_CR','8',124,'2019-04-27 22:00:00','2019-04-27 19:00:00',99,'2019-04-27 20:00:00');
+Insert into vuelo (id_vuelo,aerolinea,precio,a_salida,a_llegada,c_avion,p_abordaje,f_llegada,p_hora,pista,f_salida)
+values (7,'Avianca','400','aero_Panama','aero_Colombia','23',12,'2019-04-28 10:00:00','2019-04-28 11:00:00',98,'2019-04-28 11:00:00');
+Insert into vuelo (id_vuelo,aerolinea,precio,a_salida,a_llegada,c_avion,p_abordaje,f_llegada,p_hora,pista,f_salida)
+values (8,'Avianca','100','aero_Colombia','aero_CR','2',123,'2019-04-29 5:00:00','2019-04-29 01:00:00',97,'2019-04-28 02:00:00');
+Insert into vuelo (id_vuelo,aerolinea,precio,a_salida,a_llegada,c_avion,p_abordaje,f_llegada,p_hora,pista,f_salida)
+values (9,'Copa','1200','Aero_Mexico','aero_CR','12',123,'2019-06-16 12:00:00','2019-06-22 04:00:00',96,'2019-04-28 02:00:00');
+Insert into vuelo (id_vuelo,aerolinea,precio,a_salida,a_llegada,c_avion,p_abordaje,f_llegada,p_hora,pista,f_salida)
+values (10,'Aero Mexico','1200','aero_Colombia','aero_Panama','14',125,'2019-07-16 12:00:00','2019-07-22 04:00:00',96,'2019-04-28 02:00:00');

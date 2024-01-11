@@ -1,0 +1,397 @@
+----------Tabla Cliente------------------
+
+CREATE TRIGGER Verificar_Cliente
+ON Cliente FOR INSERT AS
+IF ((SELECT Flag_Own_car From inserted)  = 'N' or (SELECT Flag_Own_car From inserted)  = 'Y' )
+	IF ((SELECT Cod_Genero From inserted) = 'M' or (SELECT Cod_Genero From inserted) = 'F')
+		IF ((SELECT Name_Education_Type From inserted) = 'Secondary / secondary special' 
+		or (SELECT Name_Education_Type From inserted) = 'Higher education'  
+		or (SELECT Name_Education_Type From inserted) = 'Incomplete higher'
+		or (SELECT Name_Education_Type From inserted) = 'Lower secondary')
+			IF ((SELECT Name_Family_Status From inserted) = 'Single / not married' 
+			or (SELECT Name_Family_Status From inserted) = 'Married' 
+			or (SELECT Name_Family_Status From inserted) = 'Civil marriage' 
+			or (SELECT Name_Family_Status From inserted) = 'Widow'
+			or (SELECT Name_Family_Status From inserted) = 'Separated')
+				IF ((SELECT Name_Housing_Type From inserted) = 'Municipal apartment' 
+				or (SELECT Name_Housing_Type From inserted) = 'House / apartment' 
+				or (SELECT Name_Housing_Type From inserted) = 'With parents' 
+				or (SELECT Name_Housing_Type From inserted) = 'Rented apartment'
+				or (SELECT Name_Housing_Type From inserted) = 'Co-op apartment'
+				or (SELECT Name_Housing_Type From inserted) = 'Office apartment')
+						BEGIN
+							print('INSERT LISTO')
+						END;
+				ELSE
+					BEGIN
+					RAISERROR('El tipo de alojamiento solo puede ser: Municipal apartment, House / apartment, With parents, Rented apartment, Co-op apartment o Office apartment  ".',16,1)
+					ROLLBACK TRANSACTION 
+					END;
+			ELSE
+				BEGIN
+				RAISERROR('El status familiar solo puede ser: Single / not married, Married, Civil marriage, Widow o Separated".',16,1)
+				ROLLBACK TRANSACTION 
+				END;
+		ELSE
+			BEGIN
+			RAISERROR('El tipo de educacion solo puede ser: Secondary / secondary special, Higher education, Incomplete higher o Lower secondary ".',16,1)
+			ROLLBACK TRANSACTION 
+			END;
+	ELSE
+		BEGIN
+		RAISERROR('Las horas semanales deben ser mayores a 0".',16,1)
+		ROLLBACK TRANSACTION 
+		END;
+ELSE
+	BEGIN
+	RAISERROR('La Carrera solo puede ser Info, Com Social o Técnica".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+Go
+
+----------Tabla Ingreso_Cliente------------------
+
+CREATE TRIGGER Verificar_ingreso_cliente
+ON Ingreso_Cliente FOR INSERT AS
+IF ((SELECT Income_Total_AMT From inserted) > 0 and (SELECT AMT_Credit From inserted) > 0 and (SELECT AMT_Annuality From inserted) > 0 and (SELECT AMT_Goods_Price From inserted) > 0)
+	IF((SELECT Name_Income_Type From inserted) = 'Working' 
+	or (SELECT Name_Income_Type From inserted) = 'State servant' 
+	or (SELECT Name_Income_Type From inserted) = 'Commercial associate' 
+	or (SELECT Name_Income_Type From inserted) = 'Pensioner'
+	or (SELECT Name_Income_Type From inserted) = ' partner')
+		BEGIN
+			print('INSERT LISTO')
+		END;
+	ELSE
+		BEGIN
+		RAISERROR('El tipo de ingresos es invalido.".',16,1)
+			ROLLBACK TRANSACTION				
+		END;
+ELSE
+	BEGIN
+	RAISERROR('Ningun valor puede ser menor o igual a cero.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+Go
+
+--------------- Tabla Previus_aplication--------------------
+
+CREATE TRIGGER Verificar_prev_aplication
+ON Previus_aplication FOR INSERT AS
+IF ((SELECT Name_Client_Type From inserted) ='Cash through the bank' or (SELECT Name_Client_Type From inserted) ='XNA' or (SELECT Name_Client_Type From inserted) ='Non-cash from your account')
+	IF((SELECT Name_goods_category From inserted) = 'XAP' 
+	or (SELECT Name_goods_category From inserted) = 'HC' 
+	or (SELECT Name_goods_category From inserted) = 'LIMIT' 
+	or (SELECT Name_goods_category From inserted) = 'SCOFR'
+	or (SELECT Name_goods_category From inserted) = ' CLIENT')
+		IF((SELECT name_product_type From inserted) = 'Repeater' 
+		or (SELECT name_product_type From inserted) = 'New' 
+		or (SELECT name_product_type From inserted) = 'Refreshed')
+			BEGIN
+				print('INSERT LISTO')
+			END;
+		ELSE
+			BEGIN
+			RAISERROR('El tipo de producto es invalido.".',16,1)
+				ROLLBACK TRANSACTION				
+			END;
+	ELSE
+		BEGIN
+		RAISERROR('El tipo bienes es invalido.".',16,1)
+			ROLLBACK TRANSACTION				
+		END;
+ELSE
+	BEGIN
+	RAISERROR('El tipo de Cliente es invalido.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+
+------------ Pos_cash_balance ------------------
+
+CREATE TRIGGER Verificar_pos_cash_balance
+ON Pos_cash_balance FOR INSERT AS
+IF ((SELECT [Name_con1sk_dep] From inserted) ='Active' 
+or (SELECT [Name_con1sk_dep] From inserted) ='Demand' 
+or (SELECT [Name_con1sk_dep] From inserted) ='Completed'
+or (SELECT [Name_con1sk_dep] From inserted) ='Signed')
+	BEGIN
+		print('Insert Listo')
+			
+	END;
+ELSE
+	BEGIN
+	RAISERROR('El estado es invalido.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+
+-------------- Installments_payments -----------
+
+CREATE TRIGGER Verif_install_payments
+ON Installments_payments FOR INSERT AS
+IF ((SELECT AMT_instalment From inserted) > 0 
+or (SELECT AMT_payment From inserted) > 0)
+	BEGIN
+		print('Insert Listo')	
+	END;
+ELSE
+	BEGIN
+	RAISERROR('El estado es invalido.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+Go
+
+------------- Info_datos_prestamo -----------------
+
+CREATE TRIGGER Verif_info_prestamo
+ON Info_datos_prestamo FOR INSERT AS
+IF ((SELECT [Weekday_app_process_start] From inserted) ='MONDAY' 
+or (SELECT [Weekday_app_process_start] From inserted) ='TUESDAY'
+or (SELECT [Weekday_app_process_start] From inserted) ='WEDNESDAY'
+or (SELECT [Weekday_app_process_start] From inserted) ='THURSDAY'
+or (SELECT [Weekday_app_process_start] From inserted) ='FRIDAY'
+or (SELECT [Weekday_app_process_start] From inserted) ='SATURDAY'
+or (SELECT [Weekday_app_process_start] From inserted) ='SUNDAY')
+	IF ((SELECT [Hour_app_process] From inserted) > 0)
+		BEGIN
+			print('Insert Listo')
+		END;
+	ELSE
+		BEGIN
+		RAISERROR('Las horas deben ser mayor a 0.".',16,1)
+			ROLLBACK TRANSACTION				
+		END;
+ELSE
+	BEGIN
+	RAISERROR('El Dia es invalido.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+Go
+
+--------------- Tabla Detalle_Cash_balance ---------------------
+
+CREATE TRIGGER Verificar_cash_balance
+ON Detalle_cash_balance FOR INSERT AS
+IF ((SELECT [Months_Balance] From inserted) <0 and  (SELECT [Months_Balance] From inserted) >-100)
+	IF((SELECT [CNT_instalment] From inserted) > 0 and (SELECT [CNT_instalment] From inserted) < 100)
+		IF ((SELECT CNT_instalmets_future From inserted) > 0 and (SELECT CNT_instalmets_future From inserted) < 100)
+			IF ((SELECT SK_DPD_DEF From inserted) >= 0 and (SELECT SK_DPD_DEF From inserted) < 50)
+				BEGIN
+					print('Insert Listo')
+			
+				END;
+			ELSE
+				BEGIN
+				RAISERROR('Fuera del rango 0 a 50.".',16,1)
+					ROLLBACK TRANSACTION				
+				END;
+		ELSE
+			BEGIN
+			RAISERROR('Fuera del rango 0 a 100.".',16,1)
+			ROLLBACK TRANSACTION				
+			END;
+	ELSE
+		BEGIN
+		RAISERROR('Fuera del rango 0 a 100.".',16,1)
+		ROLLBACK TRANSACTION				
+		END;
+ELSE
+	BEGIN
+	RAISERROR('Fuera del rango 0 a -100.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+go 
+
+----------------- Detalle_bureau -------------------
+
+CREATE TRIGGER Verificar_detalle_bureau
+ON Detalle_Bureau FOR INSERT AS
+IF ((SELECT [Credit_active] From inserted) = 'Closed' or (SELECT [Credit_active] From inserted) ='Active')
+	IF((SELECT credit_currence From inserted) = 'currency 1')
+		IF ((SELECT [days_credit] From inserted) < 0 )
+			IF ((SELECT [credit_days_overdue] From inserted) >= 0)
+				IF ((SELECT [Amt_credit_max_overdue] From inserted) >= 0 
+				and (SELECT [amt_credit_sum] From inserted) >= 0 
+				and (SELECT [amt_credit_sum_debt] From inserted) >= 0 
+				and (SELECT amt_credit_sum_limit From inserted) >= 0)
+					IF ((SELECT [credit_type] From inserted) = 'Consumer credit' 
+					and (SELECT [credit_type] From inserted) = 'Credit card' 
+					and (SELECT [credit_type] From inserted) = 'Car loan' 
+					and (SELECT [credit_type] From inserted) = 'Mortgage'
+					and (SELECT [credit_type] From inserted) = 'Another type of loan'
+					and (SELECT [credit_type] From inserted) = 'Microloan')
+						IF ((SELECT [days_credit_update] From inserted) < 0 )
+							BEGIN
+								print('Insert Listo')
+			
+							END;
+						ELSE
+							BEGIN
+							RAISERROR('Tiene que ser menor a 0".',16,1)
+								ROLLBACK TRANSACTION				
+							END;
+					ELSE
+						BEGIN
+						RAISERROR('El tipo solo puede ser: Consumer credit, Credit card, Car loan, Mortgage, Another type of loan o Microloan".',16,1)
+							ROLLBACK TRANSACTION				
+						END;
+				ELSE
+					BEGIN
+					RAISERROR('Tiene que ser mayor o igual a 0".',16,1)
+						ROLLBACK TRANSACTION				
+					END;
+			ELSE
+				BEGIN
+				RAISERROR('Tiene que ser mayor o igual a 0".',16,1)
+					ROLLBACK TRANSACTION				
+				END;
+		ELSE
+			BEGIN
+			RAISERROR('Tiene que ser menor a 0.".',16,1)
+			ROLLBACK TRANSACTION				
+			END;
+	ELSE
+		BEGIN
+		RAISERROR('Solo pude ser currency 1.".',16,1)
+		ROLLBACK TRANSACTION				
+		END;
+ELSE
+	BEGIN
+	RAISERROR('Solo Puede ser Active or Closed.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+go 
+
+------------------- tabla Datos_Payment -----------------
+
+CREATE TRIGGER Verificar_datos_payment
+ON Datos_Payment FOR INSERT AS
+IF ((SELECT [Num_instalmet_version] From inserted) >= 0 and (SELECT [Num_instalmet_number] From inserted) >=0)
+	BEGIN
+		print('INSERT LISTO')
+	END;
+ELSE
+	BEGIN
+		RAISERROR('Solo Puede ser Active or Closed.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+go 
+
+-------------------- Tabla Datos_Contrato ------------------
+
+CREATE TRIGGER Verificar_datos_contrato
+ON Datos_Contrato FOR INSERT AS
+IF ((SELECT [Name_Contract_status] From inserted) = 'Approved' 
+	or (SELECT [Name_Contract_status] From inserted) ='Refused'
+	or (SELECT [Name_Contract_status] From inserted) ='Canceled'
+	or (SELECT [Name_Contract_status] From inserted) ='Unused offer')
+	IF ((SELECT [Name_paymet_type] From inserted) = 'Consumer loans' 
+		or (SELECT [Name_paymet_type] From inserted) ='Cash loans'
+		or (SELECT [Name_paymet_type] From inserted) ='Revolving loans')
+		IF ((SELECT [Code_reject_reason] From inserted) = 'XAP' 
+			or (SELECT [Code_reject_reason] From inserted) ='HC'
+			or (SELECT [Code_reject_reason] From inserted) ='SCO'
+			or (SELECT [Code_reject_reason] From inserted) ='LIMIT'
+			or (SELECT [Code_reject_reason] From inserted) ='XNA'
+			or (SELECT [Code_reject_reason] From inserted) ='CLIENT'
+			or (SELECT [Code_reject_reason] From inserted) ='SCOFR')
+			IF ((SELECT [Name_portafolio] From inserted) = 'XNA' 
+				or (SELECT [Name_portafolio] From inserted) ='Cash'
+				or (SELECT [Name_portafolio] From inserted) ='Cards'
+				or (SELECT [Name_portafolio] From inserted) ='POS'
+				or (SELECT [Name_portafolio] From inserted) ='Audio/Video'
+				or (SELECT [Name_portafolio] From inserted) ='Homewares'
+				or (SELECT [Name_portafolio] From inserted) ='Consumer Electronics'
+				or (SELECT [Name_portafolio] From inserted) ='Sport and Leisure'
+				or (SELECT [Name_portafolio] From inserted) ='Photo / Cinema Equipment'
+				or (SELECT [Name_portafolio] From inserted) ='Gardening'
+				or (SELECT [Name_portafolio] From inserted) ='Clothing and Accessories'
+				or (SELECT [Name_portafolio] From inserted) ='Construction Materials'
+				or (SELECT [Name_portafolio] From inserted) ='Furniture'
+				or (SELECT [Name_portafolio] From inserted) ='Computers'
+				or (SELECT [Name_portafolio] From inserted) ='Mobile')
+				BEGIN
+					print('INSERT LISTO')
+				END;
+			ELSE
+				BEGIN
+					RAISERROR('Tipo incorrecto.".',16,1)
+					ROLLBACK TRANSACTION				
+				END;
+		ELSE
+			BEGIN
+				RAISERROR('Solo Puede ser: XAP, HC, SCO, LIMIT, XNA, CLIENT o SCOFR.".',16,1)
+				ROLLBACK TRANSACTION				
+			END;
+	ELSE
+		BEGIN
+			RAISERROR('Solo Puede ser: Consumer loans, Cash loans o Revolving loans.".',16,1)
+			ROLLBACK TRANSACTION				
+		END;
+ELSE
+	BEGIN
+		RAISERROR('Solo Puede ser: Approved, Refused, Canceled o Unused offer.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+go 
+
+---------------- Tabla Credit_card_balance ---------------
+
+CREATE TRIGGER Verificar_credit_card_balance
+ON Datos_Contrato FOR INSERT AS
+IF ((SELECT Name_contract_status From inserted) = 'Active' 
+	or (SELECT Name_contract_status From inserted) ='Sent proposal'
+	or (SELECT Name_contract_status From inserted) ='Completed'
+	or (SELECT Name_contract_status From inserted) ='Signed')
+		BEGIN
+			print('INSERT LISTO')
+		END;
+ELSE
+	BEGIN
+		RAISERROR('Solo Puede ser: Active, Sent proposal, Completed o Signed.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+go 
+
+---------------- Tabla bureau_balance ----------------------
+
+CREATE TRIGGER Verificar_bureau_balance
+ON Bureau_Balance FOR INSERT AS
+IF ((SELECT [Months_Balance] From inserted) <=0)
+	IF ((SELECT [status] From inserted)='X'
+	or (SELECT [status] From inserted)='C'
+	or (SELECT [status] From inserted)='0')
+		BEGIN
+			print('INSERT LISTO')
+		END;
+	ELSE
+		BEGIN
+			RAISERROR('Solo Puede ser: X, C o 0.".',16,1)
+			ROLLBACK TRANSACTION				
+		END;
+ELSE
+	BEGIN
+		RAISERROR('Solo Puede ser igual o menor a 0.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+go 
+-------------- Aplication_train_test -------------------
+
+CREATE TRIGGER Verificar_aplication_train_test
+ON [Aplication_Train_Test] FOR INSERT AS
+IF ((SELECT [Targets] From inserted) <=0)
+	IF ((SELECT [Name_Cont] From inserted)='Cash loans'
+	or (SELECT [Name_Cont] From inserted)='Revolving loans')
+		BEGIN
+			print('INSERT LISTO')
+		END;
+	ELSE
+		BEGIN
+			RAISERROR('Solo Puede ser: Cash loans o Revolving loans.".',16,1)
+			ROLLBACK TRANSACTION				
+		END;
+ELSE
+	BEGIN
+		RAISERROR('Solo Puede ser igual o menor a 0.".',16,1)
+		ROLLBACK TRANSACTION				
+	END;
+go 
